@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AMApplicationBuild</key>
+	<string>247.1</string>
+	<key>AMApplicationVersion</key>
+	<string>2.1.1</string>
+	<key>AMDocumentVersion</key>
+	<string>2</string>
+	<key>actions</key>
+	<array>
+		<dict>
+			<key>action</key>
+			<dict>
+				<key>AMAccepts</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Optional</key>
+					<true/>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>AMActionVersion</key>
+				<string>1.0</string>
+				<key>AMParameterProperties</key>
+				<dict>
+					<key>source</key>
+					<dict/>
+				</dict>
+				<key>AMProvides</key>
+				<dict>
+					<key>Container</key>
+					<string>List</string>
+					<key>Types</key>
+					<array>
+						<string>com.apple.applescript.object</string>
+					</array>
+				</dict>
+				<key>ActionBundlePath</key>
+				<string>/System/Library/Automator/Run AppleScript.action</string>
+				<key>ActionName</key>
+				<string>Run AppleScript</string>
+				<key>ActionParameters</key>
+				<dict>
+					<key>source</key>
+					<string>(*	Open Terminal Here	ver. 1.0	~Kristofor Maynard		Opens a new tab of terminal and cd's to the directory of what you are currently working on.	This behavior is expected for most Apple applications (XCode, TextEdit, etc.) as well as TextMate and MacVim.	If the current application is not supported, terminal will cd into the most recent selection in Finder.	*)on run {input, parameters}	(*		get a list of files that represent things that might		represent what directory we want to cd to	*)	set filelist to {}		try		tell application "System Events" to set thisApp to name of first process whose frontmost is true		tell application thisApp			tell (front document)				set thepath to path as POSIX file				set filelist to filelist &amp; thepath			end tell		end tell	on error errmesg		(*individual exceptions for applications that don't play nice with applescript*)		if thisApp = "MacVim" then			try				set windowtitle to name of window of application thisApp as string				set ofa to offset of "(" in windowtitle				set ofb to offset of ")" in windowtitle				if ofa is equal to 0 or ofb is equal to 0 then					set filelist to filelist &amp; (path to home folder as string)				else					set pfromtitle to (text (ofa + 1) thru (ofb - 1) of windowtitle) as string					set filelist to filelist &amp; ((pfromtitle &amp; "/") as POSIX file)				end if			end try		end if	end try		if (count filelist) = 0 then		tell application "Finder" to set filelist to selection	end if		(*		decide which directory to actually cd to	*)	set tloc to ""	if (count filelist) &gt; 0 then		(* find the 1st folder in the selection and use it *)		repeat with myitem in filelist			set str to myitem as string			if ((character -1) of str) is equal to ":" then				set tloc to str				exit repeat			end if		end repeat				if tloc is equal to "" then			(* if only non-folders are selected, use location of 1st file *)			set elif to reverse of (characters of (item 1 of filelist as string)) as string			set theOffset to offset of ":" in elif			set tloc to reverse of (characters of (text (theOffset) thru -1 of elif)) as string		end if			else		(* If nothing is selected, then the desktop was the last finder click *)		set tloc to path to desktop folder as string	end if		(* 	     now open in terminal 	*)	set tildaoffset to offset of "~" in tloc	if not tildaoffset is equal to 0 then		set tloc to "~/" &amp; quoted form of (POSIX path of (text (tildaoffset + 2) thru -1 of tloc))	else		set tloc to quoted form of (POSIX path of tloc)	end if	set cmd to "cd " &amp; tloc	tell application "System Events" to set terminalIsRunning to exists application process "Terminal"	tell application "Terminal"		activate		if terminalIsRunning is true then			(* pop open a new tab if terminal is already running *)			tell application "System Events" to click menu item 1 of ((process "Terminal")'s (menu bar 1)'s (menu bar item "Shell")'s (menu "Shell")'s (menu item "New Tab")'s (menu "New Tab"))			do script with command cmd in window 1		else			(* use 1st window if we just opened terminal *)			do script with command cmd in window 1		end if	end tell	return 0end run</string>
+				</dict>
+				<key>Application</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>BundleIdentifier</key>
+				<string>com.apple.Automator.RunScript</string>
+				<key>CFBundleVersion</key>
+				<string>1.0</string>
+				<key>CanShowSelectedItemsWhenRun</key>
+				<false/>
+				<key>CanShowWhenRun</key>
+				<true/>
+				<key>Category</key>
+				<array>
+					<string>AMCategoryUtilities</string>
+				</array>
+				<key>Class Name</key>
+				<string>RunScriptAction</string>
+				<key>InputUUID</key>
+				<string>25B38667-EB83-4CC7-A680-441DF94AB64F</string>
+				<key>Keywords</key>
+				<array>
+					<string>Run</string>
+				</array>
+				<key>OutputUUID</key>
+				<string>A7275A81-A94D-4A4B-8C06-4084D6E0A5FC</string>
+				<key>UUID</key>
+				<string>32B1CC4D-8A0A-4D4E-A9CF-D4F963E6ECD8</string>
+				<key>UnlocalizedApplications</key>
+				<array>
+					<string>Automator</string>
+				</array>
+				<key>arguments</key>
+				<dict>
+					<key>0</key>
+					<dict>
+						<key>default value</key>
+						<string>on run {input, parameters}
+	
+	(* Your script goes here *)
+	
+	return input
+end run</string>
+						<key>name</key>
+						<string>source</string>
+						<key>required</key>
+						<string>0</string>
+						<key>type</key>
+						<string>0</string>
+						<key>uuid</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>isViewVisible</key>
+				<true/>
+				<key>location</key>
+				<string>472.000000:520.000000</string>
+				<key>nibPath</key>
+				<string>/System/Library/Automator/Run AppleScript.action/Contents/Resources/English.lproj/main.nib</string>
+			</dict>
+			<key>isViewVisible</key>
+			<true/>
+		</dict>
+	</array>
+	<key>connectors</key>
+	<dict/>
+	<key>state</key>
+	<dict>
+		<key>AMLogTabViewSelectedIndex</key>
+		<integer>0</integer>
+		<key>libraryState</key>
+		<dict>
+			<key>actionsMajorSplitViewState</key>
+			<dict>
+				<key>expandedPosition</key>
+				<real>0.0</real>
+				<key>subviewState</key>
+				<array>
+					<string>0.000000, 0.000000, 381.000000, 508.000000, NO</string>
+					<string>0.000000, 509.000000, 381.000000, 184.000000, NO</string>
+				</array>
+			</dict>
+			<key>actionsMinorSplitViewState</key>
+			<dict>
+				<key>expandedPosition</key>
+				<real>0.0</real>
+				<key>subviewState</key>
+				<array>
+					<string>0.000000, 0.000000, 163.000000, 508.000000, NO</string>
+					<string>164.000000, 0.000000, 217.000000, 508.000000, NO</string>
+				</array>
+			</dict>
+			<key>variablesMajorSplitViewState</key>
+			<dict>
+				<key>expandedPosition</key>
+				<real>0.0</real>
+				<key>subviewState</key>
+				<array>
+					<string>0.000000, 0.000000, 381.000000, 555.000000, NO</string>
+					<string>0.000000, 556.000000, 381.000000, 144.000000, NO</string>
+				</array>
+			</dict>
+			<key>variablesMinorSplitViewState</key>
+			<dict>
+				<key>expandedPosition</key>
+				<real>0.0</real>
+				<key>subviewState</key>
+				<array>
+					<string>0.000000, 0.000000, 163.000000, 555.000000, NO</string>
+					<string>164.000000, 0.000000, 217.000000, 555.000000, NO</string>
+				</array>
+			</dict>
+		</dict>
+		<key>majorSplitViewState</key>
+		<dict>
+			<key>expandedPosition</key>
+			<real>381</real>
+			<key>subviewState</key>
+			<array>
+				<string>0.000000, 0.000000, 0.000000, 738.000000, YES</string>
+				<string>0.000000, 0.000000, 959.000000, 729.000000, NO</string>
+			</array>
+		</dict>
+		<key>minorSplitViewState</key>
+		<dict>
+			<key>expandedPosition</key>
+			<real>150</real>
+			<key>subviewState</key>
+			<array>
+				<string>0.000000, 0.000000, 959.000000, 560.000000, NO</string>
+				<string>0.000000, 570.000000, 959.000000, 140.000000, NO</string>
+			</array>
+		</dict>
+		<key>windowFrame</key>
+		<string>{{482, 52}, {958, 806}}</string>
+		<key>workflowViewScrollPosition</key>
+		<string>{{0, 0}, {944, 560}}</string>
+	</dict>
+	<key>variables</key>
+	<array>
+		<dict>
+			<key>UUID</key>
+			<string>A8D1510A-CB6A-4F30-A09C-78777C0EA9C9</string>
+			<key>identifier</key>
+			<string>com.apple.Automator.Variable.ShellScript</string>
+			<key>name</key>
+			<string>Shell Script</string>
+			<key>value</key>
+			<string>/bin/bash</string>
+		</dict>
+	</array>
+	<key>workflowMetaData</key>
+	<dict>
+		<key>serviceInputTypeIdentifier</key>
+		<string>com.apple.Automator.nothing</string>
+		<key>serviceOutputTypeIdentifier</key>
+		<string>com.apple.Automator.nothing</string>
+		<key>workflowTypeIdentifier</key>
+		<string>com.apple.Automator.servicesMenu</string>
+	</dict>
+</dict>
+</plist>
